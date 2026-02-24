@@ -214,9 +214,7 @@ TEST_F(DmhamanTest, GetHandlerGeneric)
     void *fn = (void *)(uintptr_t)test_handler_a;
     dmhaman_register_handler_generic("generic", fn);
 
-    void *out = nullptr;
-    int result = dmhaman_get_handler("generic", &out);
-    EXPECT_EQ(result, 0);
+    void *out = dmhaman_get_handler("generic");
     EXPECT_EQ(out, fn);
 }
 
@@ -224,31 +222,20 @@ TEST_F(DmhamanTest, GetHandlerTyped)
 {
     dmhaman_register_handler("evt", test_handler_a, nullptr);
 
-    void *out = nullptr;
-    int result = dmhaman_get_handler("evt", &out);
-    EXPECT_EQ(result, 0);
+    void *out = dmhaman_get_handler("evt");
     EXPECT_EQ(out, (void *)(uintptr_t)test_handler_a);
 }
 
 TEST_F(DmhamanTest, GetHandlerNotFound)
 {
-    void *out  = nullptr;
-    int result = dmhaman_get_handler("nonexistent", &out);
-    EXPECT_LT(result, 0);
+    void *out = dmhaman_get_handler("nonexistent");
+    EXPECT_EQ(out, nullptr);
 }
 
 TEST_F(DmhamanTest, GetHandlerNullName)
 {
-    void *out  = nullptr;
-    int result = dmhaman_get_handler(nullptr, &out);
-    EXPECT_LT(result, 0);
-}
-
-TEST_F(DmhamanTest, GetHandlerNullOutput)
-{
-    dmhaman_register_handler_generic("generic", (void *)test_handler_a);
-    int result = dmhaman_get_handler("generic", nullptr);
-    EXPECT_LT(result, 0);
+    void *out = dmhaman_get_handler(nullptr);
+    EXPECT_EQ(out, nullptr);
 }
 
 TEST_F(DmhamanTest, GetHandlerReturnsFirst)
@@ -257,9 +244,7 @@ TEST_F(DmhamanTest, GetHandlerReturnsFirst)
     dmhaman_register_handler("evt", test_handler_a, nullptr);
     dmhaman_register_handler("evt", test_handler_b, nullptr);
 
-    void *out  = nullptr;
-    int result = dmhaman_get_handler("evt", &out);
-    EXPECT_EQ(result, 0);
+    void *out = dmhaman_get_handler("evt");
     EXPECT_EQ(out, (void *)(uintptr_t)test_handler_a);
 }
 
@@ -347,9 +332,8 @@ TEST_F(DmhamanTest, UnregisterGenericHandler)
     int count = dmhaman_unregister_handler_generic("generic", (void *)test_handler_a);
     EXPECT_EQ(count, 1);
 
-    void *out  = nullptr;
-    int result = dmhaman_get_handler("generic", &out);
-    EXPECT_LT(result, 0);
+    void *out = dmhaman_get_handler("generic");
+    EXPECT_EQ(out, nullptr);
 }
 
 TEST_F(DmhamanTest, UnregisterGenericNullName)
@@ -372,8 +356,6 @@ TEST_F(DmhamanTest, UnregisterGenericOnlyRemovesMatchingHandler)
     dmhaman_unregister_handler_generic("g1", (void *)test_handler_a);
 
     // g2 must still be retrievable
-    void *out  = nullptr;
-    int result = dmhaman_get_handler("g2", &out);
-    EXPECT_EQ(result, 0);
+    void *out = dmhaman_get_handler("g2");
     EXPECT_EQ(out, (void *)(uintptr_t)test_handler_b);
 }

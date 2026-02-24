@@ -70,11 +70,10 @@ int dmhaman_call_handler(const char *name, void *parameters);
  *       defined in ISO C.  On all supported embedded and host platforms this
  *       is well-defined.
  *
- * @param name    Name to look up.
- * @param handler Output: receives the function pointer.
- * @return int 0 on success, negative error code on failure.
+ * @param name Name to look up.
+ * @return void* Function pointer on success, NULL if not found or @p name is NULL.
  */
-int dmhaman_get_handler(const char *name, void **handler);
+void *dmhaman_get_handler(const char *name);
 
 /**
  * @brief Remove all typed entries registered under @p name with @p handler.

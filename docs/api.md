@@ -114,7 +114,7 @@ Calls **all** typed handlers registered under `name` in registration order
 ### `dmhaman_get_handler`
 
 ```c
-int dmhaman_get_handler(const char *name, void **handler);
+void *dmhaman_get_handler(const char *name);
 ```
 
 Returns the function pointer stored for the **first** entry whose name
@@ -122,11 +122,10 @@ matches `name`, regardless of entry type (generic or typed).
 
 | Parameter | Description |
 |---|---|
-| `name`    | Name to look up. Must not be `NULL`. |
-| `handler` | Output: receives the function pointer. Must not be `NULL`. |
+| `name` | Name to look up. Passing `NULL` returns `NULL`. |
 
-**Returns** `0` on success, `-ENOENT` if not found, `-EINVAL` on bad
-arguments.
+**Returns** the function pointer on success, `NULL` if not found, `name` is
+`NULL`, or the registry is not initialized.
 
 ---
 

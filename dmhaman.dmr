@@ -1,6 +1,19 @@
 # DMOD Resource File for dmhaman
 # This file specifies where resources should be installed
 
+# === Core Module ===
+# Main module file - always installed
+dmf=./dmhaman.dmf => ${destination}/${module}.dmf
+
+# Compressed module
+dmfc=./dmhaman.dmfc => ${destination}/${module}.dmfc
+
+# Dependencies file (if exists)
+dmd=./dmhaman.dmd => ${destination}/${module}.dmd
+
+# Version information
+version=./dmhaman_version.txt => ${destination}/${module}_version.txt
+
 # === Header Files ===
 # Include directory with dmhaman.h header
 inc=./include => ${destination}/${module}/include

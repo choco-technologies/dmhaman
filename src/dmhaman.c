@@ -219,7 +219,7 @@ int dmhaman_call_handler(const char *name, void *parameters)
 typedef struct
 {
     const char *name;
-    void      **out;
+    void       *result;
     bool        found;
 } dmhaman_get_ctx_t;
 
@@ -232,13 +232,13 @@ static bool get_iterator(void *data, void *user_data)
     {
         if (entry->type == DMHAMAN_ENTRY_GENERIC)
         {
-            *ctx->out = entry->generic_handler;
+            ctx->result = entry->generic_handler;
         }
         else
         {
             /* Casting function pointer to void* is implementation-defined
              * but supported on all targeted platforms. */
-            *ctx->out = (void *)(uintptr_t)entry->handler;
+            ctx->result = (void *)(uintptr_t)entry->handler;
         }
         ctx->found = true;
         return false; /* stop at first match */
@@ -246,28 +246,28 @@ static bool get_iterator(void *data, void *user_data)
     return true;
 }
 
-int dmhaman_get_handler(const char *name, void **handler)
+void *dmhaman_get_handler(const char *name)
 {
-    if (name == NULL || handler == NULL)
+    if (name == NULL)
     {
         DMOD_LOG_ERROR("Invalid arguments to dmhaman_get_handler\n");
-        return -EINVAL;
+        return NULL;
     }
     if (g_handler_list == NULL)
     {
         DMOD_LOG_ERROR("Registry not initialized\n");
-        return -EINVAL;
+        return NULL;
     }
 
-    dmhaman_get_ctx_t ctx = { .name = name, .out = handler, .found = false };
+    dmhaman_get_ctx_t ctx = { .name = name, .result = NULL, .found = false };
     dmlist_foreach(g_handler_list, get_iterator, &ctx);
 
     if (!ctx.found)
     {
         DMOD_LOG_ERROR("Handler '%s' not found\n", name);
-        return -ENOENT;
+        return NULL;
     }
-    return 0;
+    return ctx.result;
 }
 
 /* ------------------------------------------------------------------ */
