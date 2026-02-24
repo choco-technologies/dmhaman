@@ -1,3 +1,7 @@
+#include "dmod-config.h"
+#if DMOD_MODULE_EN == ON
+#   define DMOD_ENABLE_REGISTRATION    ON
+#endif
 #include "dmhaman.h"
 #include "dmlist.h"
 #include <string.h>
@@ -326,5 +330,50 @@ int dmhaman_unregister_handler_generic(const char *name, void *handler)
     }
 
     return count;
+}
+
+/* ------------------------------------------------------------------ */
+/*  DMOD module lifecycle                                               */
+/* ------------------------------------------------------------------ */
+
+/**
+ * @brief DMOD module initialization.
+ *
+ * Called by the DMOD runtime when the module is enabled.
+ * Initializes the handler registry.
+ *
+ * @param Config DMOD configuration passed by the runtime (unused).
+ * @return int 0 on success.
+ */
+int dmod_init(const Dmod_Config_t *Config)
+{
+    (void)Config;
+    dmhaman_init();
+    DMOD_LOG_INFO("dmhaman: initialized\n");
+    return 0;
+}
+
+/**
+ * @brief DMOD module de-initialization.
+ *
+ * Called by the DMOD runtime when the module is disabled.
+ * Frees all registered handlers and destroys the registry list.
+ *
+ * @return int 0 on success.
+ */
+int dmod_deinit(void)
+{
+    if (g_handler_list != NULL)
+    {
+        void *entry;
+        while ((entry = dmlist_pop_front(g_handler_list)) != NULL)
+        {
+            Dmod_Free(entry);
+        }
+        dmlist_destroy(g_handler_list);
+        g_handler_list = NULL;
+    }
+    DMOD_LOG_INFO("dmhaman: de-initialized\n");
+    return 0;
 }
 
