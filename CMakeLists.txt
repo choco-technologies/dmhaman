@@ -39,6 +39,17 @@ FetchContent_MakeAvailable(dmod)
 set(DMOD_DIR ${dmod_SOURCE_DIR} CACHE PATH "DMOD source directory")
 
 # ======================================================================
+#               Fetch dmlist
+# ======================================================================
+FetchContent_Declare(
+    dmlist
+    GIT_REPOSITORY https://github.com/choco-technologies/dmlist.git
+    GIT_TAG        v0.2
+)
+set(DMLIST_BUILD_TESTS OFF CACHE BOOL "Build dmlist tests")
+FetchContent_MakeAvailable(dmlist)
+
+# ======================================================================
 #               For VS Code
 # ======================================================================
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -74,6 +85,12 @@ if(NOT DMHAMAN_BUILD_TESTS)
     target_include_directories(${DMOD_MODULE_NAME} PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     )
+
+    dmod_link_modules(${DMOD_MODULE_NAME}
+        dmlist
+    )
+
+    target_link_libraries(${DMOD_MODULE_NAME} dmlist_if)
 endif()
 
 # ======================================================================
@@ -83,3 +100,4 @@ if(DMHAMAN_BUILD_TESTS)
     enable_testing()
     add_subdirectory(tests)
 endif()
+

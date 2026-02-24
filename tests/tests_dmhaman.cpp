@@ -271,7 +271,7 @@ TEST_F(DmhamanTest, UnregisterSingleHandler)
 {
     dmhaman_register_handler("evt", test_handler_a, nullptr);
 
-    int count = dmhaman_unregister_handler("evt");
+    int count = dmhaman_unregister_handler("evt", test_handler_a);
     EXPECT_EQ(count, 1);
 
     // No longer callable
@@ -280,24 +280,46 @@ TEST_F(DmhamanTest, UnregisterSingleHandler)
 
 TEST_F(DmhamanTest, UnregisterRemovesAllMatchingEntries)
 {
+    // Same handler registered twice under same name
     dmhaman_register_handler("multi", test_handler_a, nullptr);
-    dmhaman_register_handler("multi", test_handler_b, nullptr);
+    dmhaman_register_handler("multi", test_handler_a, nullptr);
 
-    int count = dmhaman_unregister_handler("multi");
+    int count = dmhaman_unregister_handler("multi", test_handler_a);
     EXPECT_EQ(count, 2);
 
     EXPECT_LT(dmhaman_call_handler("multi", nullptr), 0);
 }
 
+TEST_F(DmhamanTest, UnregisterOnlyRemovesMatchingHandler)
+{
+    // Two different handlers under the same name
+    dmhaman_register_handler("multi", test_handler_a, nullptr);
+    dmhaman_register_handler("multi", test_handler_b, nullptr);
+
+    // Unregister only handler_a; handler_b must still be callable
+    int count = dmhaman_unregister_handler("multi", test_handler_a);
+    EXPECT_EQ(count, 1);
+
+    int result = dmhaman_call_handler("multi", nullptr);
+    EXPECT_EQ(result, 0);
+    EXPECT_EQ(g_call_count, 1);
+}
+
 TEST_F(DmhamanTest, UnregisterNullName)
 {
-    int result = dmhaman_unregister_handler(nullptr);
+    int result = dmhaman_unregister_handler(nullptr, test_handler_a);
+    EXPECT_LT(result, 0);
+}
+
+TEST_F(DmhamanTest, UnregisterNullHandler)
+{
+    int result = dmhaman_unregister_handler("evt", nullptr);
     EXPECT_LT(result, 0);
 }
 
 TEST_F(DmhamanTest, UnregisterNonexistentHandler)
 {
-    int count = dmhaman_unregister_handler("nonexistent");
+    int count = dmhaman_unregister_handler("nonexistent", test_handler_a);
     EXPECT_EQ(count, 0);
 }
 
@@ -306,7 +328,7 @@ TEST_F(DmhamanTest, UnregisterLeavesOtherHandlersIntact)
     dmhaman_register_handler("evtA", test_handler_a, nullptr);
     dmhaman_register_handler("evtB", test_handler_b, nullptr);
 
-    dmhaman_unregister_handler("evtA");
+    dmhaman_unregister_handler("evtA", test_handler_a);
 
     // evtB must still work
     int result = dmhaman_call_handler("evtB", nullptr);
@@ -314,14 +336,44 @@ TEST_F(DmhamanTest, UnregisterLeavesOtherHandlersIntact)
     EXPECT_EQ(g_call_count, 1);
 }
 
+// ================================================================== //
+//              dmhaman_unregister_handler_generic
+// ================================================================== //
+
 TEST_F(DmhamanTest, UnregisterGenericHandler)
 {
     dmhaman_register_handler_generic("generic", (void *)test_handler_a);
 
-    int count = dmhaman_unregister_handler("generic");
+    int count = dmhaman_unregister_handler_generic("generic", (void *)test_handler_a);
     EXPECT_EQ(count, 1);
 
     void *out  = nullptr;
     int result = dmhaman_get_handler("generic", &out);
     EXPECT_LT(result, 0);
+}
+
+TEST_F(DmhamanTest, UnregisterGenericNullName)
+{
+    int result = dmhaman_unregister_handler_generic(nullptr, (void *)test_handler_a);
+    EXPECT_LT(result, 0);
+}
+
+TEST_F(DmhamanTest, UnregisterGenericNullHandler)
+{
+    int result = dmhaman_unregister_handler_generic("generic", nullptr);
+    EXPECT_LT(result, 0);
+}
+
+TEST_F(DmhamanTest, UnregisterGenericOnlyRemovesMatchingHandler)
+{
+    dmhaman_register_handler_generic("g1", (void *)test_handler_a);
+    dmhaman_register_handler_generic("g2", (void *)test_handler_b);
+
+    dmhaman_unregister_handler_generic("g1", (void *)test_handler_a);
+
+    // g2 must still be retrievable
+    void *out  = nullptr;
+    int result = dmhaman_get_handler("g2", &out);
+    EXPECT_EQ(result, 0);
+    EXPECT_EQ(out, (void *)(uintptr_t)test_handler_b);
 }

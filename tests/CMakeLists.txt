@@ -52,6 +52,7 @@ foreach(test_src ${TEST_SOURCES})
         dmod_inc
         dmod_common
         dmod_system
+        dmlist
     )
 
     # Add test to CTest

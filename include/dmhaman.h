@@ -77,12 +77,29 @@ int dmhaman_call_handler(const char *name, void *parameters);
 int dmhaman_get_handler(const char *name, void **handler);
 
 /**
- * @brief Remove all entries (generic and typed) registered under @p name.
+ * @brief Remove all typed entries registered under @p name with @p handler.
  *
- * @param name Name whose entries should be removed.
+ * Only entries that match both @p name **and** @p handler are removed.
+ * This allows precise removal even when multiple handlers share the same name
+ * (one-to-many registration).
+ *
+ * @param name    Name the handler was registered under.
+ * @param handler Handler function pointer to remove.
  * @return int Number of entries removed on success, negative error code on
  *         failure.
  */
-int dmhaman_unregister_handler(const char *name);
+int dmhaman_unregister_handler(const char *name, dmhaman_handler_t handler);
+
+/**
+ * @brief Remove all generic entries registered under @p name with @p handler.
+ *
+ * Only entries that match both @p name **and** @p handler are removed.
+ *
+ * @param name    Name the handler was registered under.
+ * @param handler Generic (untyped) function pointer to remove.
+ * @return int Number of entries removed on success, negative error code on
+ *         failure.
+ */
+int dmhaman_unregister_handler_generic(const char *name, void *handler);
 
 #endif /* DMHAMAN_H */
