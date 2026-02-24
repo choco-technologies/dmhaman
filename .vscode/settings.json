@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "dmod.h": "c",
+        "dmlist.h": "c",
+        "dmhaman.h": "c"
+    },
+    "C_Cpp.default.defines": [
+        "DMOD_MODULE_NAME=\"dmhaman\"",
+        "DMOD_MODULE_VERSION=\"0.1\""
+    ]
+}
