@@ -78,20 +78,6 @@ set(DMOD_AUTHOR_NAME    "Choco Technologies")
 set(DMOD_STACK_SIZE     1024)
 
 # ======================================================================
-#               Generate API header (needed by both module and tests)
-# ======================================================================
-to_snake_case(${DMOD_MODULE_NAME} DMOD_MODULE_NAME_SNAKE_CASE)
-if(NOT DEFINED DMOD_PRIORITY)
-    set(DMOD_PRIORITY 1)
-endif()
-if(NOT DEFINED DMOD_MANUAL_LOAD)
-    set(DMOD_MANUAL_LOAD OFF)
-endif()
-set(DMOD_MODULE_TYPE Library)
-configure_file(${DMOD_DIR}/scripts/api.h.in
-    ${CMAKE_CURRENT_BINARY_DIR}/${DMOD_MODULE_NAME_SNAKE_CASE}_defs.h)
-
-# ======================================================================
 #               Build module only when not in test mode
 # ======================================================================
 if(NOT DMHAMAN_BUILD_TESTS)
