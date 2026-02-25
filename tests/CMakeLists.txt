@@ -55,6 +55,10 @@ foreach(test_src ${TEST_SOURCES})
         dmlist
     )
 
+    target_compile_definitions(${test_name} PRIVATE
+        DMOD_dmhaman
+    )
+
     # Add test to CTest
     add_test(NAME ${test_name} COMMAND ${test_name})
 
