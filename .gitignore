@@ -1,3 +1,11 @@
+# Build directories
+build/
+build_*/
+build-tests/
+_codeql_build_dir/
+_codeql_detected_source_root
+
+# CMake artifacts
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
@@ -11,9 +19,15 @@ CTestTestfile.cmake
 _deps
 CMakeUserPresets.json
 
-# CLion
-#  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
-#  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
-#  and can be added to the global gitignore or merged into this file.  For a more nuclear
-#  option (not recommended) you can uncomment the following to ignore the entire idea folder.
+# DMOD package files
+*.dmf
+*.dmfc
+
+# IDE
+.idea/
 #cmake-build-*
+
+# Temporary files
+*.tmp
+*.swp
+*~
