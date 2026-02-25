@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.18)
 # ======================================================================
 #               Unit Tests Option (early to control build behavior)
 # ======================================================================
-option(DMHAMAN_BUILD_TESTS "Build unit tests" OFF)
+option(DMHAMAN_BUILD_TESTS "Build integration tests" OFF)
 
 # ======================================================================
 #               dmhaman Version
@@ -77,27 +77,22 @@ set(DMOD_AUTHOR_NAME    "Choco Technologies")
 # Stack size for the module (should be integer)
 set(DMOD_STACK_SIZE     1024)
 
-# ======================================================================
-#               Build module only when not in test mode
-# ======================================================================
-if(NOT DMHAMAN_BUILD_TESTS)
-    dmod_add_library(${DMOD_MODULE_NAME} ${DMOD_MODULE_VERSION}
-        src/dmhaman.c
-    )
+dmod_add_library(${DMOD_MODULE_NAME} ${DMOD_MODULE_VERSION}
+    src/dmhaman.c
+)
 
-    target_include_directories(${DMOD_MODULE_NAME} PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-    )
+target_include_directories(${DMOD_MODULE_NAME} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
 
-    dmod_link_modules(${DMOD_MODULE_NAME}
-        dmlist
-    )
+dmod_link_modules(${DMOD_MODULE_NAME}
+    dmlist
+)
 
-    target_link_libraries(${DMOD_MODULE_NAME} dmlist_if)
-endif()
+target_link_libraries(${DMOD_MODULE_NAME} dmlist_if)
 
 # ======================================================================
-#               Unit Tests
+#               Integration Tests
 # ======================================================================
 if(DMHAMAN_BUILD_TESTS)
     enable_testing()

@@ -26,10 +26,10 @@ jobs:
           cmake .. -DDMOD_MODE=DMOD_MODULE
           cmake --build .
 
-      - name: Build and run unit tests
+      - name: Build and run integration tests
         run: |
           mkdir -p build-tests
           cd build-tests
-          cmake .. -DDMOD_MODE=DMOD_SYSTEM -DDMHAMAN_BUILD_TESTS=ON
+          cmake .. -DDMOD_MODE=DMOD_MODULE -DDMHAMAN_BUILD_TESTS=ON
           cmake --build .
-          ctest --output-on-failure
+          ctest --output-on-failure --verbose

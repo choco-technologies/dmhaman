@@ -98,6 +98,7 @@ jobs:
           cp LICENSE release_package/
           cp dmhaman.dmr release_package/
           cp -r include release_package/
+          cp $BUILD_DIR/dmhaman_defs.h release_package/include/
 
           echo "${{ github.event.release.body }}" > release_package/RELEASE_NOTES.txt
 
