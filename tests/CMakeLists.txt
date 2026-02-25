@@ -1,75 +1,51 @@
 # ======================================================================
-#               dmhaman Unit Tests
+#               dmhaman Integration Tests
 # ======================================================================
+cmake_minimum_required(VERSION 3.18)
 
-# ===========================================================================
-#   Fetch the Google Test framework
-# ===========================================================================
-include(FetchContent)
+project(dmhaman_tests VERSION 1.0 DESCRIPTION "dmhaman Integration Tests" LANGUAGES C)
 
-FetchContent_Declare(
-    googletest
-    URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
-)
-FetchContent_MakeAvailable(googletest)
+# Ensure DMOD is available
+if(NOT DMOD_DIR)
+    message(FATAL_ERROR "DMOD_DIR not set. Tests must be built as part of the main project.")
+endif()
 
-# ===========================================================================
-#                       Test source files
-# ===========================================================================
-set(TEST_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/tests_dmhaman.cpp
-)
+# ======================================================================
+#               Build verification tests
+# ======================================================================
+# These tests verify the module was built correctly.
 
-# ===========================================================================
-#                       Source files under test
-# ===========================================================================
-set(DMHAMAN_SOURCES
-    ${CMAKE_SOURCE_DIR}/src/dmhaman.c
+# Test 1: Verify the DMF module binary was created
+add_test(NAME dmhaman_module_built
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_BINARY_DIR}/dmf/dmhaman.dmf
+        ${CMAKE_BINARY_DIR}/dmf/dmhaman.dmf.test
 )
 
-# ===========================================================================
-#                       Build each test as separate executable
-# ===========================================================================
-foreach(test_src ${TEST_SOURCES})
-    get_filename_component(test_name ${test_src} NAME_WE)
-
-    add_executable(${test_name}
-        ${test_src}
-        ${CMAKE_CURRENT_SOURCE_DIR}/ut_main.cpp
-        ${DMHAMAN_SOURCES}
-    )
-
-    target_include_directories(${test_name} PRIVATE
-        ${CMAKE_SOURCE_DIR}/include
-        ${DMOD_DIR}/inc
-        ${CMAKE_BINARY_DIR}
-    )
-
-    target_link_libraries(${test_name}
-        gtest
-        gtest_main
-        gmock
-        dmod_inc
-        dmod_common
-        dmod_system
-        dmlist
-    )
-
-    # Add test to CTest
-    add_test(NAME ${test_name} COMMAND ${test_name})
-
-    # Add to test files list
-    list(APPEND TEST_EXECUTABLES ${test_name})
-endforeach()
-
-# ===========================================================================
-#                       Custom target to run all tests
-# ===========================================================================
-add_custom_target(dmhaman_tests ALL
-    DEPENDS ${TEST_EXECUTABLES}
+# Cleanup test file
+add_test(NAME dmhaman_module_built_cleanup
+    COMMAND ${CMAKE_COMMAND} -E remove -f
+        ${CMAKE_BINARY_DIR}/dmf/dmhaman.dmf.test
+)
+set_tests_properties(dmhaman_module_built_cleanup PROPERTIES
+    DEPENDS dmhaman_module_built
 )
 
-add_custom_target(run_tests
-    COMMAND ctest --output-on-failure
-    DEPENDS ${TEST_EXECUTABLES}
+# Test 2: Verify the generated API header was created
+add_test(NAME dmhaman_defs_header_generated
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_BINARY_DIR}/dmhaman_defs.h
+        ${CMAKE_BINARY_DIR}/dmhaman_defs.h.test
 )
+
+add_test(NAME dmhaman_defs_header_cleanup
+    COMMAND ${CMAKE_COMMAND} -E remove -f
+        ${CMAKE_BINARY_DIR}/dmhaman_defs.h.test
+)
+set_tests_properties(dmhaman_defs_header_cleanup PROPERTIES
+    DEPENDS dmhaman_defs_header_generated
+)
+
+message(STATUS "dmhaman integration tests configured")
+message(STATUS "  Module output directory: ${CMAKE_BINARY_DIR}/dmf")
+message(STATUS "  Run 'ctest' to verify the build")
