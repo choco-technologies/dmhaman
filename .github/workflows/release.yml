@@ -96,6 +96,8 @@ jobs:
 
           cp README.md release_package/
           cp LICENSE release_package/
+          cp dmhaman.dmr release_package/
+          cp -r include release_package/
 
           echo "${{ github.event.release.body }}" > release_package/RELEASE_NOTES.txt
 
