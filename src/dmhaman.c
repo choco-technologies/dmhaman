@@ -78,7 +78,7 @@ void dmhaman_init(void)
         dmlist_destroy(g_handler_list);
         g_handler_list = NULL;
     }
-    g_handler_list = dmlist_create("dmhaman");
+    g_handler_list = dmlist_create(Dmod_GetCurrentAllocatorName());
 }
 
 /* ------------------------------------------------------------------ */
