@@ -96,7 +96,7 @@ int dmhaman_register_handler_generic(const char *name, void *handler)
         return -EINVAL;
     }
 
-    dmhaman_entry_t *entry = (dmhaman_entry_t *)Dmod_MallocEx(sizeof(dmhaman_entry_t), "dmhaman");
+    dmhaman_entry_t *entry = Dmod_Malloc(sizeof(dmhaman_entry_t));
     if (entry == NULL)
     {
         DMOD_LOG_ERROR("Failed to allocate handler entry\n");
@@ -135,7 +135,7 @@ int dmhaman_register_handler(const char *name, dmhaman_handler_t handler, void *
         return -EINVAL;
     }
 
-    dmhaman_entry_t *entry = (dmhaman_entry_t *)Dmod_MallocEx(sizeof(dmhaman_entry_t), "dmhaman");
+    dmhaman_entry_t *entry = Dmod_Malloc(sizeof(dmhaman_entry_t));
     if (entry == NULL)
     {
         DMOD_LOG_ERROR("Failed to allocate handler entry\n");
