@@ -78,7 +78,14 @@ void dmhaman_init(void)
         dmlist_destroy(g_handler_list);
         g_handler_list = NULL;
     }
-    g_handler_list = dmlist_create(Dmod_GetCurrentAllocatorName());
+    /* DMOD_CURRENT_ALLOCATOR, not Dmod_GetCurrentAllocatorName(): dmod_init()
+     * runs on the thread of whoever enabled this module, so the "current"
+     * allocator is that process's - and allocation tracking bulk-frees a
+     * process's memory when it exits. State that belongs to the module has to
+     * be tagged to the module, or it dies with the first process that happened
+     * to pull it in, leaving this pointer aimed at whatever gets allocated
+     * there next. */
+    g_handler_list = dmlist_create(DMOD_CURRENT_ALLOCATOR);
 }
 
 /* ------------------------------------------------------------------ */
