@@ -85,7 +85,7 @@ void dmhaman_init(void)
      * be tagged to the module, or it dies with the first process that happened
      * to pull it in, leaving this pointer aimed at whatever gets allocated
      * there next. */
-    g_handler_list = dmlist_create(DMOD_CURRENT_ALLOCATOR);
+    g_handler_list = dmlist_create();
 }
 
 /* ------------------------------------------------------------------ */
